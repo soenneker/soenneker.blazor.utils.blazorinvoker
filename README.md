@@ -5,7 +5,7 @@
 # ![](https://user-images.githubusercontent.com/4441470/224455560-91ed3ee7-f510-4041-a8d2-3fc093025112.png) Soenneker.Blazor.Utils.BlazorInvoker
 ### A generic invoker to simplify JavaScript to C# interaction
 
-`BlazorInvoker<T>` is an encapsulation class designed as a generic invocation point from JS to C#. It's used for 'fire-and-forget' with no return value.
+`BlazorInvoker<TInput>` is an encapsulation class designed as a generic invocation point from JS to C#. It's used for 'fire-and-forget' with no return value.
 
 
 ## Installation

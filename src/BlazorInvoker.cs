@@ -7,22 +7,22 @@ using Soenneker.Blazor.Utils.BlazorInvoker.Abstract;
 namespace Soenneker.Blazor.Utils.BlazorInvoker;
 
 ///<inheritdoc cref="IBlazorInvoker{TInput}"/>
-public class BlazorInvoker<T> : IBlazorInvoker<T>
+public class BlazorInvoker<TInput> : IBlazorInvoker<TInput>
 {
-    private readonly Func<T, ValueTask> _func;
+    private readonly Func<TInput, ValueTask> _func;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="BlazorInvoker{T}"/> class.
+    /// Initializes a new instance of the <see cref="BlazorInvoker{TInput}"/> class.
     /// </summary>
     /// <param name="invoker">The invoker function.</param>
     [DynamicDependency(nameof(Invoke))]
-    public BlazorInvoker(Func<T, ValueTask> invoker)
+    public BlazorInvoker(Func<TInput, ValueTask> invoker)
     {
         _func = invoker;
     }
 
     [JSInvokable(nameof(Invoke))]
-    public async ValueTask Invoke(T args)
+    public async ValueTask Invoke(TInput args)
     {
         await _func(args);
     }
