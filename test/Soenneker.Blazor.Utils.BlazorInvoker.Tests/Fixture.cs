@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Soenneker.Fixtures.Unit;
 using Soenneker.Utils.Test;
-using Soenneker.Blazor.MockJsRuntime.Registrars;
 
 namespace Soenneker.Blazor.Utils.BlazorInvoker.Tests;
 
