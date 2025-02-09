@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Soenneker.Blazor.Utils.BlazorInvoker.Abstract;
@@ -11,5 +12,6 @@ public interface IBlazorInvoker<in TInput>
     /// Invokes the Blazor func set.
     /// </summary>
     /// <param name="args">The input argument.</param>
-    ValueTask Invoke(TInput args);
+    /// <param name="cancellationToken"></param>
+    ValueTask Invoke(TInput args, CancellationToken cancellationToken = default);
 }
