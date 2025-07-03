@@ -8,7 +8,7 @@ using Soenneker.Extensions.ValueTask;
 namespace Soenneker.Blazor.Utils.BlazorInvoker;
 
 ///<inheritdoc cref="IBlazorInvoker{TInput}"/>
-public class BlazorInvoker<TInput> : IBlazorInvoker<TInput>
+public sealed class BlazorInvoker<TInput> : IBlazorInvoker<TInput>
 {
     private readonly Func<TInput, ValueTask> _func;
 
