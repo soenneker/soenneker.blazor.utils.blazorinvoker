@@ -26,6 +26,6 @@ public sealed class BlazorInvoker<TInput> : IBlazorInvoker<TInput>
     [JSInvokable(nameof(Invoke))]
     public async ValueTask Invoke(TInput args)
     {
-        await _func(args).NoSync();
+        await _func(args);
     }
 }
