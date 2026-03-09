@@ -40,6 +40,6 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.JSInterop" Version="10.0.3" />
-        <PackageReference Include="Soenneker.Extensions.ValueTask" Version="4.0.105" />
+        <PackageReference Include="Soenneker.Extensions.ValueTask" Version="4.0.106" />
     </ItemGroup>
 </Project>
