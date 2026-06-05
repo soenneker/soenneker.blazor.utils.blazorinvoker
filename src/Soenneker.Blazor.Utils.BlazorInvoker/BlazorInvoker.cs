@@ -12,10 +12,6 @@ public sealed class BlazorInvoker<TInput> : IBlazorInvoker<TInput>
 {
     private readonly Func<TInput, ValueTask> _func;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BlazorInvoker{TInput}"/> class.
-    /// </summary>
-    /// <param name="invoker">The invoker function.</param>
     [DynamicDependency(nameof(Invoke))]
     public BlazorInvoker(Func<TInput, ValueTask> invoker)
     {
