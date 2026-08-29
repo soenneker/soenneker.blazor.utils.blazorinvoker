@@ -3,30 +3,33 @@
 [![](https://img.shields.io/nuget/dt/soenneker.blazor.utils.blazorinvoker.svg?style=for-the-badge)](https://www.nuget.org/packages/soenneker.blazor.utils.blazorinvoker/)
 [![](https://img.shields.io/github/actions/workflow/status/soenneker/soenneker.blazor.utils.blazorinvoker/codeql.yml?label=CodeQL&style=for-the-badge)](https://github.com/soenneker/soenneker.blazor.utils.blazorinvoker/actions/workflows/codeql.yml)
 
-# ![](https://user-images.githubusercontent.com/4441470/224455560-91ed3ee7-f510-4041-a8d2-3fc093025112.png) Soenneker.Blazor.Utils.BlazorInvoker
-### A generic invoker to simplify JavaScript to C# interaction
+# Soenneker.Blazor.Utils.BlazorInvoker
 
-`BlazorInvoker<TInput>` is an encapsulation class designed as a generic invocation point from JS to C#. It's used for 'fire-and-forget' with no return value.
+A generic invoker to simplify JavaScript to C# interaction.
 
+## Install
 
-## Installation
-
-```
+```bash
 dotnet add package Soenneker.Blazor.Utils.BlazorInvoker
 ```
 
-## Usage
+## Quick start
 
-### C#
 ```csharp
-var stringInvoker = new BlazorInvoker<string>(async (input) =>
-{
-    await SomeAsyncOperation(input);
-});
+using Soenneker.Blazor.Utils.BlazorInvoker.Abstract;
+
+IBlazorInvoker<TInput> blazorInvoker = /* resolve from DI */;
+await blazorInvoker.Invoke(/* supply args */ default!);
 ```
 
-### JS
+Invokes the Blazor func set.
 
-```javascript
-dotnetObject.invokeMethodAsync('Invoke', 'JavaScript argument');
-```
+## What you get
+
+- `IBlazorInvoker<TInput>` — A generic invoker to simplify JavaScript to C# interaction.
+
+## API at a glance
+
+| API | What it does | Result / important behavior |
+| --- | --- | --- |
+| `IBlazorInvoker<TInput>.Invoke(args)` | Invokes the Blazor func set. | A task that completes when the callback has finished running. |
