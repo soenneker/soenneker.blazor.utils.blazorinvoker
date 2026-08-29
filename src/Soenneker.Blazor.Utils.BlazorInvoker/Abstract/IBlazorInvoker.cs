@@ -10,6 +10,7 @@ public interface IBlazorInvoker<in TInput>
     /// <summary>
     /// Invokes the Blazor func set.
     /// </summary>
-    /// <param name="args">The input argument.</param>
+    /// <param name="args">Command-line arguments passed to the application.</param>
+    /// <returns>A task that completes when the callback has finished running.</returns>
     ValueTask Invoke(TInput args);
 }
