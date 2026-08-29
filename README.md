@@ -5,31 +5,92 @@
 
 # Soenneker.Blazor.Utils.BlazorInvoker
 
-A generic invoker to simplify JavaScript to C# interaction.
+A small adapter that exposes a `Func<TInput, ValueTask>` as an instance `[JSInvokable]` method for JavaScript-to-.NET callbacks.
 
-## Install
+## Installation
 
 ```bash
 dotnet add package Soenneker.Blazor.Utils.BlazorInvoker
 ```
 
-## Quick start
+There is no service registration. Create an invoker for a specific callback, wrap it in a `DotNetObjectReference`, and pass that reference to your JavaScript module.
 
-```csharp
-using Soenneker.Blazor.Utils.BlazorInvoker.Abstract;
+## Component example
 
-IBlazorInvoker<TInput> blazorInvoker = /* resolve from DI */;
-await blazorInvoker.Invoke(/* supply args */ default!);
+```razor
+@using Microsoft.JSInterop
+@using Soenneker.Blazor.Utils.BlazorInvoker
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+<p>@_message</p>
+
+@code {
+    private IJSObjectReference? _module;
+    private BlazorInvoker<BrowserMessage>? _invoker;
+    private DotNetObjectReference<BlazorInvoker<BrowserMessage>>? _reference;
+    private string? _message;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        _invoker = new BlazorInvoker<BrowserMessage>(message =>
+            new ValueTask(InvokeAsync(() =>
+            {
+                _message = message.Text;
+                StateHasChanged();
+            })));
+
+        _reference = DotNetObjectReference.Create(_invoker);
+        _module = await JS.InvokeAsync<IJSObjectReference>("import", "./callback.js");
+        await _module.InvokeVoidAsync("registerCallback", _reference);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_module is not null)
+        {
+            await _module.InvokeVoidAsync("unregisterCallback");
+            await _module.DisposeAsync();
+        }
+
+        _reference?.Dispose();
+    }
+
+    private sealed record BrowserMessage(string Text);
+}
 ```
 
-Invokes the Blazor func set.
+The JavaScript side receives the object reference and invokes its `Invoke` method:
 
-## What you get
+```javascript
+let callback;
 
-- `IBlazorInvoker<TInput>` — A generic invoker to simplify JavaScript to C# interaction.
+export function registerCallback(reference) {
+    callback = reference;
+}
 
-## API at a glance
+export function unregisterCallback() {
+    callback = null;
+}
 
-| API | What it does | Result / important behavior |
-| --- | --- | --- |
-| `IBlazorInvoker<TInput>.Invoke(args)` | Invokes the Blazor func set. | A task that completes when the callback has finished running. |
+export async function publish(text) {
+    if (!callback)
+        throw new Error("The .NET callback has not been registered.");
+
+    await callback.invokeMethodAsync("Invoke", { text });
+}
+```
+
+## Behavior and ownership
+
+- `Invoke(args)` awaits the configured delegate. A delegate exception rejects JavaScript's `invokeMethodAsync` promise, so JavaScript callers should await and handle failures.
+- The invoker does not marshal work onto a component renderer. Use the owning component's `InvokeAsync` when the delegate changes component state or calls `StateHasChanged`.
+- JavaScript cannot supply a .NET `CancellationToken` to this method. Capture a component or operation token in the delegate when cancellation is required.
+- The invoker does not create or dispose `DotNetObjectReference`. The owner must retain and dispose that reference, or the delegate and any captured component state remain rooted.
+- A disposed object reference must not be invoked again. Unregister browser listeners before disposal when they can race with component teardown.
+- Treat callback payloads as untrusted input. Validate values, sizes, identifiers, and authorization before using them in privileged operations.
+
+`BlazorInvoker<TInput>` is useful when several interop wrappers need the same one-argument callback shape. For a component with multiple named callbacks, ordinary `[JSInvokable]` instance methods may be clearer.

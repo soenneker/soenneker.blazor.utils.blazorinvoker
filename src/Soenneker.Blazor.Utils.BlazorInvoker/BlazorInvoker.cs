@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
 using Soenneker.Blazor.Utils.BlazorInvoker.Abstract;
-using Soenneker.Extensions.ValueTask;
 
 namespace Soenneker.Blazor.Utils.BlazorInvoker;
 
@@ -15,6 +14,7 @@ public sealed class BlazorInvoker<TInput> : IBlazorInvoker<TInput>
     [DynamicDependency(nameof(Invoke))]
     public BlazorInvoker(Func<TInput, ValueTask> invoker)
     {
+        ArgumentNullException.ThrowIfNull(invoker);
         _func = invoker;
     }
 
