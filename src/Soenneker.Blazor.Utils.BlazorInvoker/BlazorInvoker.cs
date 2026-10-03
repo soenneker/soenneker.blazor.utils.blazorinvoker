@@ -20,8 +20,5 @@ public sealed class BlazorInvoker<TInput> : IBlazorInvoker<TInput>
 
     // CancellationToken cannot be a parameter because this is called from JS
     [JSInvokable(nameof(Invoke))]
-    public async ValueTask Invoke(TInput args)
-    {
-        await _func(args);
-    }
+    public ValueTask Invoke(TInput args) => _func(args);
 }
